@@ -26,10 +26,21 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
+        Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                roadNotify();
+            }
+        });
+    }
+
+    private void roadNotify() {
         Intent intent = new Intent(this, AlertDialog.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
+//        Intent snoozeIntent = new Intent(this, );
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -37,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                         .setContentTitle("LifeSet")
                         .setContentText("this is LifeSet notification")
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText("Much longer text that cannot fit one line..."))
+                                .bigText("Much longer text that cannot fit one line...Much longer text that cannot fit one line...Much longer text that cannot fit one line..."))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true);
