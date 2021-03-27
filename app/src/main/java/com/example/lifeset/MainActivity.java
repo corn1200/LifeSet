@@ -8,9 +8,12 @@ import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -25,6 +28,16 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         createNotificationChannel();
+
+        BroadcastReceiver receiver = new MyBroadcastReceiver();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        this.registerReceiver(receiver, filter);
+
+        Intent intent = new Intent();
+        intent.setAction("com.example.broadcast.MY_NOTIFICATION");
+        intent.putExtra("data", "Notice me senpai!");
+        sendBroadcast(intent);
 
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
