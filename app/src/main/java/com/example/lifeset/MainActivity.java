@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         this.registerReceiver(receiver, filter);
 
         Intent intent = new Intent();
-        intent.setAction("com.example.broadcast.MY_NOTIFICATION");
+        intent.setAction("com.example.lifeset.MyBroadcastReceiver");
         intent.putExtra("data", "Notice me senpai!");
         sendBroadcast(intent);
 
@@ -53,7 +53,11 @@ public class MainActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-//        Intent snoozeIntent = new Intent(this, );
+        Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
+        snoozeIntent.setAction(Intent.ACTION_SCREEN_ON);
+        snoozeIntent.putExtra("1234", 0);
+        PendingIntent snoozePendingIntent =
+                PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
@@ -64,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                                 .bigText("Much longer text that cannot fit one line...Much longer text that cannot fit one line...Much longer text that cannot fit one line..."))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setContentIntent(pendingIntent)
+                        .addAction(R.drawable.ic_launcher_foreground, "2134", snoozePendingIntent)
                         .setAutoCancel(true);
 
         int notificationId = 102;
