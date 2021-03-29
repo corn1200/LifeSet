@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent snoozePendingIntent =
                 PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
 
+//        Intent fullScreenIntent = new Intent(this, ImportantActivity.class);
+//        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
+//                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, CHANNEL_ID)
                         .setSmallIcon(R.drawable.ic_baseline_notifications_active_24)
@@ -67,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
                         .setStyle(new NotificationCompat.BigTextStyle()
                                 .bigText("Much longer text that cannot fit one line...Much longer text that cannot fit one line...Much longer text that cannot fit one line..."))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//                        .setFullScreenIntent(fullScreenPendingIntent, true);
                         .setContentIntent(pendingIntent)
                         .addAction(R.drawable.ic_launcher_foreground, "2134", snoozePendingIntent)
                         .setAutoCancel(true);
