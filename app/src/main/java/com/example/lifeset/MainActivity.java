@@ -1,97 +1,90 @@
 package com.example.lifeset;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-
-import android.app.AlertDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TimePicker;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String CHANNEL_ID = "10001";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        createNotificationChannel();
+        final TimePicker picker = findViewById(R.id.timePicker);
+        picker.setIs24HourView(true);
 
-        BroadcastReceiver receiver = new MyBroadcastReceiver();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-        this.registerReceiver(receiver, filter);
+        SharedPreferences sharedPreferences =
+                getSharedPreferences("daily alarm", MODE_PRIVATE);
+        long millis = sharedPreferences.getLong
+                ("nextNotifyTime", Calendar.getInstance().getTimeInMillis());
 
-        Intent intent = new Intent();
-        intent.setAction("com.example.lifeset.MyBroadcastReceiver");
-        intent.putExtra("data", "Notice me senpai!");
-        sendBroadcast(intent);
+        Calendar nextNotifyTime = new GregorianCalendar();
+        nextNotifyTime.setTimeInMillis(millis);
+
+        Date nextDate = nextNotifyTime.getTime();
+        String dateText = new SimpleDateFormat("yyyy년 MM월 dd일 EE요일 a hh시 mm분",
+                Locale.getDefault()).format(nextDate);
+        Toast.makeText(getApplicationContext(),
+                "다음 알람은 " + dateText + "으로 알람이 설정되었습니다!",
+                Toast.LENGTH_SHORT).show();
+
+        Date currentTime = nextNotifyTime.getTime();
+        SimpleDateFormat hourFormat = new SimpleDateFormat("kk", Locale.getDefault());
+        SimpleDateFormat minuteFormat = new SimpleDateFormat("mm", Locale.getDefault());
+
+        int preHour = Integer.parseInt(hourFormat.format(currentTime));
+        int preMinute = Integer.parseInt(minuteFormat.format(currentTime));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            picker.setHour(preHour);
+            picker.setMinute(preMinute);
+        } else {
+            picker.setCurrentHour(preHour);
+            picker.setCurrentMinute(preMinute);
+        }
 
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                roadNotify();
+                int hour, hour24, minute;
+                String ampm;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    hour24 = picker.getHour();
+                    minute = picker.getMinute();
+                } else {
+                    hour24 = picker.getCurrentHour();
+                    minute = picker.getCurrentMinute();
+                }
+
+                if (hour24 > 12) {
+                    ampm = "PM";
+                    hour = hour24 - 12;
+                } else {
+                    hour = hour24;
+                    ampm = "AM";
+                }
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(System.currentTimeMillis());
+                calendar.set(Calendar.HOUR_OF_DAY, hour24);
+                calendar.set(Calendar.MINUTE, minute);
+                calendar.set(Calendar.SECOND, 0);
             }
         });
-    }
-
-    private void roadNotify() {
-        Intent intent = new Intent(this, AlertDialog.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-        Intent snoozeIntent = new Intent(this, MyBroadcastReceiver.class);
-        snoozeIntent.setAction(Intent.ACTION_SCREEN_ON);
-        snoozeIntent.putExtra("1234", 0);
-        PendingIntent snoozePendingIntent =
-                PendingIntent.getBroadcast(this, 0, snoozeIntent, 0);
-
-//        Intent fullScreenIntent = new Intent(this, ImportantActivity.class);
-//        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
-//                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_baseline_notifications_active_24)
-                        .setContentTitle("LifeSet")
-                        .setContentText("this is LifeSet notification")
-                        .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText("Much longer text that cannot fit one line...Much longer text that cannot fit one line...Much longer text that cannot fit one line..."))
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//                        .setFullScreenIntent(fullScreenPendingIntent, true);
-                        .setContentIntent(pendingIntent)
-                        .addAction(R.drawable.ic_launcher_foreground, "2134", snoozePendingIntent)
-                        .setAutoCancel(true);
-
-        int notificationId = 102;
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(notificationId, builder.build());
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel =
-                    new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager =
-                    getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
     }
 }
