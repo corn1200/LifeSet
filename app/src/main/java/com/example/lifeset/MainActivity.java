@@ -11,6 +11,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 public class MainActivity extends AppCompatActivity {
     String CHANNEL_ID = "0000";
@@ -20,8 +21,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+//        정의해야하는 각 알림에 대한 고유한 정수
+        final int notificationId = 1234;
+
         createNotificationChannel();
         NotificationCompat.Builder builder = notificationBuilder();
+
+//        알림을 표시하려면 NotificationManagerCompat.notify()를 호출하여
+//        알림의 고유 ID와 NotificationCompat.Builder.build()의 결과를 전달
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.notify(notificationId, builder.build());
+//        NotificationMangerCompat.notify()에 전달하는 알림 ID를 저장해야함
+//        알림을 업데이트하거나 삭제하기 위해 필요함
     }
 
     private NotificationCompat.Builder notificationBuilder() {
@@ -55,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                         .bigText(textContentLarge))
 //                알림 우선순위 설정, Android 7.1 이하에서 알림이 얼마나 강제적인지 결정
 //                Android 8.0 이상의 경우 채널 중요도를 대신 설정해야함
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
 //                사용자가 알림을 탭할 때 실행되는 인텐트를 설정함
                 .setContentIntent(pendingIntent)
 //                사용자가 알림을 탭하면 자동으로 알림을 삭제하도록 설정
@@ -73,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel
                     (CHANNEL_ID, name, importance);
             channel.setDescription(description);
