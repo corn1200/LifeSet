@@ -53,6 +53,18 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent pendingIntent = PendingIntent.getActivity
                 (this, 0, intent, 0);
 
+//        알람에 사용자가 신속하게 상호작용할 수 있는 작업 버튼을 최대 세개 제공 가능
+//        이 작업 버튼은 사용자가 알림을 탭할 때 실행되는 작업과 중복되지 않아야 함
+//        작업 버튼을 추가하기 위해 PendingIntent 를 addAction() 메서드에 전달
+//        백그라운드에서 작업을 실행하는 BroadcastReceiver 를 시작하는 것과 같이
+//        다양한 작업을 할 수 있으므로 작업을 실행해도 이미 열려 있는 앱이 중단되지 않음
+        Intent snoozeIntent = new Intent
+                (this, UpdateNotificationBroadcast.class);
+        snoozeIntent.setAction(Intent.ACTION_SEND);
+        snoozeIntent.putExtra(CHANNEL_ID, 0);
+        PendingIntent snoozePendingIntent = PendingIntent.getBroadcast
+                (this, 0, snoozeIntent, 0);
+
 //        Builder 객체를 사용하여 알림 콘텐츠와 채널을 설정함
         NotificationCompat.Builder builder = new NotificationCompat
                 .Builder(this, CHANNEL_ID)
@@ -70,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
 //                사용자가 알림을 탭할 때 실행되는 인텐트를 설정함
                 .setContentIntent(pendingIntent)
 //                사용자가 알림을 탭하면 자동으로 알림을 삭제하도록 설정
-                .setAutoCancel(true);
+                .setAutoCancel(true)
+                .addAction(R.drawable.ic_baseline_add_comment_24,
+                        getString(R.string.snooze), snoozePendingIntent);
 //        Builder 생성자의 경우 채널 ID를 제공해야함
 //        Android 8.0 이상에서는 호환성을 유지하기 위해 필요하지만 이전 버전에선 무시
         return builder;
