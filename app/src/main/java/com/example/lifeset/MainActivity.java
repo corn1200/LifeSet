@@ -65,6 +65,16 @@ public class MainActivity extends AppCompatActivity {
         PendingIntent snoozePendingIntent = PendingIntent.getBroadcast
                 (this, 0, snoozeIntent, 0);
 
+//        앱에서 수신 전화 또는 알람 울림과 같이 시간이 중요한 메세지를 표시해야 할 경우
+//        전체 화면 인텐트를 알림과 연결할 수 있음. 알림이 호출되면 기기 잠금 상태에 따라
+//        다음 중 하나가 사용자에게 표시됨
+//        사용자 기기가 잠겨 있으면 잠금 화면을 덮음, 잠겨 있지 않으면
+//        알림을 처리하거나 닫기 위한 옵션이 포함된 펼친 형태로 알림이 표시됨
+//        Android 10 이상을 타겟팅하는 경우 USE_FULL_SCREEN_INTENT 권한을 요청
+        Intent fullScreenIntent = new Intent(this, ImportantAlarmActivity.class);
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity
+                (this, 0, fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
 //        Builder 객체를 사용하여 알림 콘텐츠와 채널을 설정함
         NotificationCompat.Builder builder = new NotificationCompat
                 .Builder(this, CHANNEL_ID)
@@ -84,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 //                사용자가 방해 금지 모드를 사용하도록 설정한 경우 Android 에서는
 //                사전 정의된 시스템 전체 카테고리를 사용하여 지정된 알림으로
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
+                .setFullScreenIntent(fullScreenPendingIntent, true)
 //                사용자가 알림을 탭하면 자동으로 알림을 삭제하도록 설정
                 .setAutoCancel(true)
                 .addAction(R.drawable.ic_baseline_add_comment_24,
