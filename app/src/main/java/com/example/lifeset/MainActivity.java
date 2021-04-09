@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 public class MainActivity extends AppCompatActivity {
+//    full screen permission 추가 필요
     String CHANNEL_ID = "0000";
 
     @Override
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
 //                사용자가 방해 금지 모드를 사용하도록 설정한 경우 Android 에서는
 //                사전 정의된 시스템 전체 카테고리를 사용하여 지정된 알림으로
                 .setCategory(NotificationCompat.CATEGORY_ALARM)
+//                전체 화면 인텐트를 보여줌
                 .setFullScreenIntent(fullScreenPendingIntent, true)
 //                사용자가 알림을 탭하면 자동으로 알림을 삭제하도록 설정
                 .setAutoCancel(true)
