@@ -14,7 +14,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 public class MainActivity extends AppCompatActivity {
-//    full screen permission 추가 필요
     String CHANNEL_ID = "0000";
 
     @Override
