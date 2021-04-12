@@ -14,8 +14,9 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 public class MainActivity extends AppCompatActivity {
-    String CHANNEL_ID = "0000";
-
+    String CHANNEL_ID = "1234";
+//    https://developer.android.com/courses
+//    안드로이드 공식 문서 교육과정 확인
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
